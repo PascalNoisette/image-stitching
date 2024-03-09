@@ -15,6 +15,18 @@ To follow though with this demo, please make sure that you have
 and 
 [Docker](https://docs.docker.com/get-docker/) installed beforehand. 
 
+```
+docker run  -p8080:8080 --rm netpascal0123/image-stitching:latest
+```
+- Access the demo by visiting the following address in your preferred browser
+```
+http://0.0.0.0:8080/
+```
+
+
+
+## Build
+
 
 - Build the docker image from source
 ```
