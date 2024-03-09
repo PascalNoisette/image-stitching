@@ -1,32 +1,16 @@
-FROM ubuntu:20.04
+FROM python:3.7
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+# Expose port you want your app on
+EXPOSE 8080
 
-# setup timezone information for when we install tzdata in the next step
-ENV TZ=Africa/Cairo
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# Upgrade pip and install requirements
+COPY requirements.txt requirements.txt
+RUN pip install -U pip
+RUN pip install -r requirements.txt
 
-# ubuntu installing - python, pip, graphviz
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    libsm6 \
-    libxext6 \
-    python3.8-minimal \
-    python3-pip \
- && rm -rf /var/lib/apt/lists/*
+# Copy app code and set working directory
+COPY demo app
+WORKDIR /app
 
-# exposing default port for streamlit
-EXPOSE 8501
-
-# making directory of app
-WORKDIR /image-stitcher
-
-# copy over requirements
-COPY requirements.txt ./requirements.txt
-
-# install pip then packages
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# copying all files over
-COPY . .
-
-# cmd to launch app when container is run
-CMD ["streamlit", "run", "demo/gui.py"]
+# Run
+ENTRYPOINT ["streamlit", "run", "gui.py", "--server.port=8080", "--server.address=0.0.0.0"]
