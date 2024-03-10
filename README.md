@@ -7,6 +7,7 @@ The advanced demo of the capabilities of OpenCV sticher is explained here https:
 
 A streamlit web interface is build around the Opencv script, the web interface was started by Moemen https://github.com/Mo-637/image-stitching.git under MIT License
 
+![Demo](https://raw.githubusercontent.com/moeara/image-stitching/main/assets/demo.gif)
 
 
 ## Running the Demo Locally using Docker
