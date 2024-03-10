@@ -1,3 +1,4 @@
-/data/adobe_panoramas
+/data/
+/demo/data/
 /demo/__pycache__
 /tests

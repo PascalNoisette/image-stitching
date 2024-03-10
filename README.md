@@ -3,7 +3,7 @@
 
 The purpose of this project was to experiment with streamlit and docker for an image stitching experiment using OpenCV's newly added **Stitcher** class, which is based on methods proposed in David G. Lowe's [paper](http://matthewalunbrown.com/papers/ijcv2007.pdf).
 
-The advanced demo of the capabilities of OpenCV sticher is explained here https://docs.opencv.org/4.x/d8/d19/tutorial_stitcher.html, a stitching_detailed.py script is supplied under the Apache 2 License and old version under the 3-clause BSD license.
+The advanced demo of the capabilities of OpenCV sticher is explained here https://docs.opencv.org/4.x/d8/d19/tutorial_stitcher.html, a stitching(_detailed).py script is supplied under the Apache 2 License and old version under the 3-clause BSD license.
 
 A streamlit web interface is build around the Opencv script, the web interface was started by Moemen https://github.com/Mo-637/image-stitching.git under MIT License
 
@@ -57,5 +57,6 @@ python3 -m pip install requirements.txt
 ```
 - Run the web interface
 ```
-streamlit run demo/gui.py
+cd demo
+streamlit run gui.py
 ```

@@ -3,7 +3,6 @@ import subprocess
 import sys
 from numpy import int32
 import os
-from stitching_detailed import parser
 import uuid
 import shutil
 
@@ -22,20 +21,26 @@ def image_uploader(multiple_pngs, unique_subpath):
     return uploaded_images
 
 
-def sidebar_advanced_option():
+def sidebar_advanced_option(advanced):
 
-    st.sidebar.subheader("Advanced options");
 
+    if advanced:
+        from stitching_detailed import parser
+        st.sidebar.subheader("Advanced options");
+    else:
+        from stitching import parser
+        st.sidebar.subheader("Options");
+        
     generatedOptions = {}
     for action in parser._actions:
         selection = action.default
         if action.choices != None:
             selection = st.sidebar.selectbox(action.help, action.choices, help=action.option_strings[0])
 
-        if action.type in [float, int32, int] and action.default  != None:
+        elif action.type in [float, int32, int] and action.default  != None:
             selection = st.sidebar.number_input(action.help, value=action.default, help=action.option_strings[0])
         
-        if action.type is bool:
+        elif action.type is bool:
             selection = st.sidebar.checkbox(action.help, action.default, help=action.option_strings[0])
 
         if selection != action.default:
@@ -50,7 +55,8 @@ def mainTab():
     st.sidebar.header('Interactive Stitching Demo')
 
     multiple_pngs = st.sidebar.file_uploader("Upload your set of PNG/JPEG images", type=([".png", ".jpeg"]), accept_multiple_files=True)
-    advanced_option = sidebar_advanced_option()
+    advanced = st.sidebar.checkbox("See all advanced options")
+    advanced_option = sidebar_advanced_option(advanced)
 
     if st.button('Run'):
         unique_subpath = str(uuid.uuid4())
@@ -59,7 +65,7 @@ def mainTab():
         # Perform stitching using OpenCV's advanced example
         st.subheader('Processing command:')
         output = os.path.join("data", unique_subpath, "result.jpg")
-        cde = f"{sys.executable} stitching_detailed.py --output {output}  {advanced_option} {' '.join(uploaded_images)}"
+        cde = f"{sys.executable} stitching{'_detailed' if advanced else ''}.py  --output {output}  {advanced_option} {' '.join(uploaded_images)}"
         st.text(cde)
         result = subprocess.run(cde, shell=True, capture_output=True, text=True)
 
