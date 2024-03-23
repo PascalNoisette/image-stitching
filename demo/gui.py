@@ -5,6 +5,7 @@ from numpy import int32
 import os
 import uuid
 import shutil
+from stitching.cli import stitch
 
 
 def image_uploader(multiple_pngs, unique_subpath):
@@ -24,27 +25,32 @@ def image_uploader(multiple_pngs, unique_subpath):
 def sidebar_advanced_option(advanced):
 
 
-    if advanced:
-        from stitching_detailed import parser
-        st.sidebar.subheader("Advanced options");
-    else:
-        from stitching import parser
-        st.sidebar.subheader("Options");
-        
+    if not advanced:
+        return ' '
+
+    parser = stitch.create_parser()
+
     generatedOptions = {}
+    knownOptions = []
     for action in parser._actions:
+        if action.dest in knownOptions:
+            continue
+        knownOptions.append(action.dest)
         selection = action.default
+
         if action.choices != None:
             selection = st.sidebar.selectbox(action.help, action.choices, help=action.option_strings[0])
 
         elif action.type in [float, int32, int] and action.default  != None:
             selection = st.sidebar.number_input(action.help, value=action.default, help=action.option_strings[0])
         
-        elif action.type is bool:
+        elif action.type is bool or action.default is False or action.default is True:
             selection = st.sidebar.checkbox(action.help, action.default, help=action.option_strings[0])
 
         if selection != action.default:
             generatedOptions[action.option_strings[0]] = selection
+            if action.default is False or action.default is True:
+                generatedOptions[action.option_strings[0]] = " "
     
     return ' '.join(f'{k} {v}' for k, v in generatedOptions.items())
 
@@ -64,8 +70,9 @@ def mainTab():
         
         # Perform stitching using OpenCV's advanced example
         st.subheader('Processing command:')
-        output = os.path.join("data", unique_subpath, "result.jpg")
-        cde = f"{sys.executable} stitching{'_detailed' if advanced else ''}.py  --output {output}  {advanced_option} {' '.join(uploaded_images)}"
+        output_dir = os.path.join("data", unique_subpath)
+        output = os.path.join(output_dir, "result.jpg")
+        cde = f"stitch  --verbose_dir {output_dir}/verbose --output {output}  {advanced_option} {' '.join(uploaded_images)}"
         st.text(cde)
         result = subprocess.run(cde, shell=True, capture_output=True, text=True)
 
@@ -94,9 +101,13 @@ def showHistory():
     for directory in history:
         file = os.path.join("data", directory, "result.jpg")
         container = st.container()
-        deleted = container.button('🗑️', key=f"remove-{directory}")
+        columns = container.columns([1, 1, 1, 1, 1, 1])
+        deleted = columns[0].button('🗑️', key=f"remove-{directory}")
+        if not os.path.exists(file):
+            file = os.path.join("data", directory, "verbose", "09_result.jpg")
         if os.path.exists(file):
             container.image(file)
+            columns[1].download_button(data=open(file, "rb"), file_name=file, label="Download")
         else:
             container.text(f"{file} not generated")
 
