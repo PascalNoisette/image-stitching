@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.7-slim
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 # Expose port you want your app on
 EXPOSE 8080
